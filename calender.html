@@ -1,0 +1,157 @@
+<!doctype html>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  font-family: Consolas, "Liberation Mono", Courier, monospace;
+}
+
+block {
+  width: 100%;
+  height: 50px;
+  display: block;
+}
+
+.calender {
+  width: 350px;
+  height: 350px;
+  margin: 0px auto;
+  overflow: scroll;
+}
+
+.cell {
+  width: 50px;
+  height: 50px;
+  display: inline-block;
+  line-height: 50px;
+  text-align: center;
+  font-size: 12px;
+}
+
+.week {
+  height: 49px;
+  color: #5B92E5;
+  border-bottom: 1px solid #cccccc;
+}
+
+.day {
+  color: #555555;
+}
+
+.notThisMonth {
+  opacity: 0.5;
+}
+
+.today {
+  color: #201800;
+  background-color: #FF9900;
+}
+
+.sat {
+  color: #55ACEE;
+}
+.sun {
+  color: #DD4B39;
+}
+</style>
+
+<div></div>
+<script>
+(function () {
+    var Calender = function () {
+
+        var view = document.createElement('div');
+        view.setAttribute('class', 'calender');
+
+        var date = new Date(),
+            month = date.getMonth(),
+            year = date.getFullYear(),
+            startPoint = new Date(year, 1).getDay();
+            prevMonthDays = new Date(year, month, 0).getDate(),
+            monthDays = new Date(year, month+1, 0).getDate(),
+            nextMonthDays = new Date(year, month+2, 0).getDate();
+
+        // 曜日viewを表示
+        // monを左端、sunを右端
+        for (var i = 1; i < 8; i++) {
+            var week = Calender.config.weeks[i % 7];
+            view.appendChild(WeekView(week));
+        }
+
+        // 日付viewを表示
+        var dayCount = 1,
+            nextMonthDayCount = 1; 
+        // 途中で終了させるので、とりあえずカレンダーとしては多すぎる50回ループ
+        for (var i = 1; i < 50; i++) {
+            var weekname = Calender.config.weeks[i % 7];
+            // 先月の日付を表示
+            if (i < startPoint) {
+                view.appendChild(DayView(prevMonthDays-startPoint+i+1));
+            }
+            // 来月の日付を表示
+            else if (dayCount > monthDays) {
+                view.appendChild(DayView(nextMonthDayCount++));
+            }
+            // 今月の日付を表示
+            else {
+                view.appendChild(DayView(dayCount, weekname, (dayCount++ === date.getDate())));
+            }
+            // 終了
+            if (dayCount > monthDays && weekname === 'sun') {
+                break;
+            }
+        }
+
+        return {
+            insert: function () {
+                document.body.appendChild(view);
+            },
+            scrollTo: function (x, y) {
+                view.scrollLeft = x;
+                view.scrollTop = y;
+            },
+            scrollToMonth: function (month) {
+                // not implemetation
+            }
+        };
+    };
+
+    Calender.config = {
+        weeks: ['sun', 'mon', 'tsu', 'wed', 'thu', 'fri', 'sat']
+    };
+
+    var WeekView = function (week) {
+        var view = document.createElement('div');
+        view.className = 'cell week';
+        view.innerText = week;
+        return view;
+    };
+
+    var DayView = function (day, week, today) {
+        week = week || '';
+
+        var view = document.createElement('div');
+        view.className = 'cell day';
+        view.innerText = day;
+        if (/^(sun|sat)$/.test(week)) {
+            view.className += ' ' + week;
+        }
+        if (week === '') {
+            view.className += ' notThisMonth';
+        }
+        if (today) {
+            view.className += ' today';
+        }
+        return view;
+    };
+
+    var cal = Calender();
+    cal.insert();
+    cal.scrollTo(0, 50);
+
+}());
+</script>
+
