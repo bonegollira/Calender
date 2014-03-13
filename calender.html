@@ -18,6 +18,7 @@ block {
 .calender {
   width: 350px;
   height: 350px;
+  position: relative;
   margin: 0px auto;
   overflow: scroll;
 }
@@ -29,6 +30,19 @@ block {
   line-height: 50px;
   text-align: center;
   font-size: 12px;
+}
+
+.month {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  opacity: 0.1;
+  line-height: 350px;
+  text-align: center;
+  font-size: 200px;
+  color: #aaaaaa;
 }
 
 .week {
@@ -67,12 +81,15 @@ block {
         view.setAttribute('class', 'calender');
 
         var date = new Date(),
-            month = date.getMonth(),
+            month = date.getMonth() + 1,
             year = date.getFullYear(),
             startPoint = new Date(year, 1).getDay();
-            prevMonthDays = new Date(year, month, 0).getDate(),
-            monthDays = new Date(year, month+1, 0).getDate(),
-            nextMonthDays = new Date(year, month+2, 0).getDate();
+            prevMonthDays = new Date(year, month-1, 0).getDate(),
+            monthDays = new Date(year, month, 0).getDate(),
+            nextMonthDays = new Date(year, month+1, 0).getDate();
+
+        // 月viewを表示
+        view.appendChild(MonthView(month));
 
         // 曜日viewを表示
         // monを左端、sunを右端
@@ -121,6 +138,13 @@ block {
 
     Calender.config = {
         weeks: ['sun', 'mon', 'tsu', 'wed', 'thu', 'fri', 'sat']
+    };
+
+    var MonthView = function (month) {
+        var view = document.createElement('div');
+        view.className = 'month';
+        view.innerText = month;
+        return view;
     };
 
     var WeekView = function (week) {
