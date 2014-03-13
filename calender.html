@@ -38,11 +38,11 @@ block {
   position: absolute;
   top: 0px;
   left: 0px;
-  opacity: 0.1;
+  opacity: 0.25;
   line-height: 350px;
   text-align: center;
   font-size: 200px;
-  color: #aaaaaa;
+  color: #4183C4;
 }
 
 .week {
@@ -81,15 +81,18 @@ block {
         view.setAttribute('class', 'calender');
 
         var date = new Date(),
-            month = date.getMonth() + 1,
+            month = date.getMonth(),
             year = date.getFullYear(),
-            startPoint = new Date(year, 1).getDay();
-            prevMonthDays = new Date(year, month-1, 0).getDate(),
-            monthDays = new Date(year, month, 0).getDate(),
-            nextMonthDays = new Date(year, month+1, 0).getDate();
+            startPoint = new Date(year, month, 1).getDay(),
+            // month=13としても1月分の日数を取得できるのでOK
+            monthDays = new Date(year,  month+1, 0).getDate(),
+            // 月の日数なので年をまたいでもOK
+            prevMonthDays = new Date(year, month, 0).getDate(),
+            dayCount = 1,
+            nextMonthDayCount = 1; 
 
         // 月viewを表示
-        view.appendChild(MonthView(month));
+        view.appendChild(MonthView(month+1));
 
         // 曜日viewを表示
         // monを左端、sunを右端
@@ -99,8 +102,6 @@ block {
         }
 
         // 日付viewを表示
-        var dayCount = 1,
-            nextMonthDayCount = 1; 
         // 途中で終了させるので、とりあえずカレンダーとしては多すぎる50回ループ
         for (var i = 1; i < 50; i++) {
             var weekname = Calender.config.weeks[i % 7];
